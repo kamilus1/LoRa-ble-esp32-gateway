@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EJA Onboard Gateway | Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="sidebar.css">
+  <link rel="stylesheet" type="text/css" href="header.css">
+  <script src="sidebar.js"></script>
+  <script src="jquery.min.js"></script>
+</head>
+<body>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="/">Home</a>
+    <a href="/gps">GPS</a>
+    <a href="/timer">Timer</a>
+    <a href="/lora">LoRa</a>
+    <a href="/terminal">Terminal</a>
+    <a href="/toggle_led_on">LED Test</a>
+  </div>
+  <div class="header">
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; EJA Onboard Gateway</span>
+  </div>
+  <h1>Terminal</h1>
+  <span id='term'></span>
+</body>
+<script>
+  $(function() {
+
+    // request data every 5 seconds
+    setInterval(requestData, 1000);
+
+    function requestData() {
+
+      // ajax request for latest sensor data
+      $.get("/terminal_messages")
+        .done(function(data) {
+
+          console.log(data);  // debugging - remove when satisfied
+
+          if (data) { // if the returned data is not null, update the values
+            $("#term").text(data.term);
+          } else { // a problem occurred
+            $("#term").text("?");
+          }
+        }).fail(function() {
+          console.log("The was a problem retrieving the data.");
+        });
+    }
+  });
+</script>
+</html>
