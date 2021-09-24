@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <SPIFFS.h>
 #include <SPI.h>
 #include <LoRa.h>
