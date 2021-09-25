@@ -173,7 +173,7 @@ class BluetoothDispatcherBase(EventDispatcher):
             Logger.error("Error on descriptor write")
 
     @ble_task
-    def write_characteristic(self, characteristic, value, write_type: Optional[WriteType] = None):
+    def  write_characteristic(self, characteristic, value, write_type: Optional[WriteType] = None):
         """Write a given characteristic value to the associated remote device
 
         :param characteristic: BluetoothGattCharacteristic Java object

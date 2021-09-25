@@ -23,7 +23,7 @@ class WriteType(IntEnum):
 
 
 if platform == 'android':
-    from able.android.dispatcher import (
+    from able.able.android.dispatcher import (
         BluetoothDispatcher,
         require_bluetooth_enabled,
         require_runtime_permissions,
