@@ -1,4 +1,4 @@
-from kivy_garden.mapview import MapView, MapMarker
+from kivy_garden.mapview import MapMarker
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -8,7 +8,8 @@ from kivy.properties import ObjectProperty
 from threading import Thread
 from time import time
 from ble import BLE
-
+from kivy.clock import mainthread
+from time import sleep
 __version__ = "1.0"
 
 android_device = True
@@ -48,22 +49,28 @@ class ConnectWindow(WhiteScreen):
         elif connected == 1:
             print("Menu screen")
 
+    @mainthread
+    def change_connect_label(self, text):
+        self.connecting_label.text = text
+    @mainthread
+    def change_connect_button(self, text):
+        self.connecting_button.text = text
+
     def connect(self):
         i = 0
         t = time()
         global connected
         while connected == 2 or connected == 0:
-            if time() - t > 2:
-                self.connecting_label.text = f"{self.connecting_label.text}."
-                t = time()
+                self.change_connect_label(f"{self.connecting_label.text}.")
                 i += 1
+                sleep(1.5)
         if connected == 1:
             self.connected = True
-            self.connecting_label.text = "Connected!"
-            self.connecting_button.text = "Menu"
+            self.change_connect_label("Connected")
+            self.change_connect_button("Menu")
         else:
-            self.connecting_label.text = "Cant connect"
-            self.connecting_button.text = "Connect Again"
+            self.change_connect_label("Cant connect")
+            self.change_connect_button("Connect again")
 
 
 class MenuWindow(WhiteScreen):
@@ -79,22 +86,25 @@ class MapWindow(WhiteScreen):
         self.data_update = True
         Thread(target=self.start_data_update_thread, args={}).start()
 
+    @mainthread
+    def map_update(self, marker):
+        self.map_view.add_marker(marker)
+
     def start_data_update_thread(self):
         t = 0
         while self.data_update:
-            if time() - t > 10:
-                t = time()
                 coords = node_data["gps"].split(";")
+                print(coords)
                 if len(coords) >=2:
                     try:
                         m1 = MapMarker(lat=float(coords[0]), lon=float(coords[1]))
-                        self.map_view.add_marker(m1)
+                        self.map_update(m1)
                     except Exception as e:
                         print(type(e), e)
+                sleep(10)
 
     def stop_data_update(self):
         self.data_update = False
-
 
 
 class GatewayWindow(WhiteScreen):
@@ -109,16 +119,19 @@ class GatewayWindow(WhiteScreen):
         self.data_update = True
         Thread(target=self.start_data_update_thread, args={}).start()
 
+    @mainthread
+    def change_labels_text(self, data):
+        self.gt_lab.text = data["name"]
+        self.rssi_lab.text = data["rssi"]
+        self.con_lab.text = data["connected"]
+        self.timer_lab.text = data["gateway timer"]
+
     def start_data_update_thread(self):
         t = 0
         global gateway_data
         while self.data_update:
-            if time() - t > 1:
-                t = time()
-                self.gt_lab.text = gateway_data["name"]
-                self.rssi_lab.text = gateway_data["rssi"]
-                self.con_lab.text = gateway_data["connected"]
-                self.timer_lab.text = gateway_data["gateway timer"]
+            self.change_labels_text(gateway_data)
+            sleep(5)
 
     def stop_data_update(self):
         self.data_update = False
@@ -135,15 +148,18 @@ class NodeWindow(WhiteScreen):
         self.data_update = True
         Thread(target=self.start_data_update_thread, args={}).start()
 
+    @mainthread
+    def change_labels_text(self, data):
+        self.node_ts_lab.text = data["node timer"]
+        self.gps_lab.text = data["gps"]
+        self.btr_lab.text = data["battery"]
+
     def start_data_update_thread(self):
         t = 0
         global node_data
         while self.data_update:
-            if time() - t > 1:
-                t = time()
-                self.node_ts_lab.text = node_data["node timer"]
-                self.gps_lab.text = node_data["gps"]
-                self.btr_lab.text = node_data["battery"]
+            self.change_labels_text(node_data)
+            sleep(5)
 
     def stop_data_update(self):
         self.data_update = False
@@ -252,24 +268,20 @@ class MapViewApp(App):
         t = 0
         global connected
         while i < 5:
-            if time() - t > 1:
-                t = time()
-                i += 1
+            i += 1
+            sleep(1)
         connected = 1
 
     def start_gateway_screen(self):
-
         if self.ble:
             self.gateway_screen = True
             Thread(target=self.ble_gateway_screen, args={}).start()
 
     def ble_gateway_screen(self):
         global gateway_data
-        t = 0
         while self.gateway_screen:
-            if time() - t > 5:
-                gateway_data = self.ble.get_gateway_data()
-                t = time()
+            gateway_data = self.ble.get_gateway_data()
+            sleep(5)
 
     def start_node_screen(self):
         if self.ble:
@@ -279,11 +291,9 @@ class MapViewApp(App):
 
     def ble_node_screen(self):
         global node_data
-        t = 0
         while self.node_screen:
-            if time() - t > 5:
-                node_data = self.ble.get_node_data()
-                t = time()
+            node_data = self.ble.get_node_data()
+            sleep(5)
 
     def stop_gateway_screen(self):
         self.gateway_screen = False
@@ -296,11 +306,11 @@ class MapViewApp(App):
         i = 0
         global connected
         while not self.ble.is_connected() and i < 10:
-            if time() - t > 5:
-                self.ble.stop_scan()
-                self.ble.start_scan()
-                t = time()
-                i += 1
+            self.ble.stop_scan()
+            self.ble.start_scan()
+            t = time()
+            i += 1
+            sleep(5)
         if self.ble.is_connected():
             connected = 1
         else:
