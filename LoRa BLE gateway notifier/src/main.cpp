@@ -46,6 +46,7 @@ void setup() {
     lora_exist = false;
   }else{
     lora_exist = true;
+	LoRa.setSpreadingFactor(LORA_SF);
     LoRa.onReceive(onReceiveLora);
     LoRa.onTxDone(onTxDoneLoRa);
     // Print LoRa initialization messages
@@ -87,10 +88,6 @@ void setup() {
                                          BLECharacteristic::PROPERTY_READ |
                                          BLECharacteristic::PROPERTY_WRITE
                                        );
-  char characteristic_value[512];
-  String json_gateway_str;
-  serializeJson(gateway_doc, json_gateway_str);
-  json_gateway_str.toCharArray(characteristic_value, json_gateway_str.length());
   gpsCharacteristic->setValue("26.39164;54.34528"); //lat;lng format
   gpsCharacteristic->setCallbacks(new GPSCharacteristicCallbacks());
   gtCharacteristic->setValue("0");

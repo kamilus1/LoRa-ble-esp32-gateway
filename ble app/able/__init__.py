@@ -1,7 +1,7 @@
 from enum import IntEnum
 
-from able.able.structures import Advertisement, Services
-from able.able.version import __version__  # noqa
+from able.structures import Advertisement, Services
+from able.version import __version__  # noqa
 from kivy.utils import platform
 
 __all__ = ('Advertisement',
@@ -23,7 +23,7 @@ class WriteType(IntEnum):
 
 
 if platform == 'android':
-    from able.able.android.dispatcher import (
+    from able.android.dispatcher import (
         BluetoothDispatcher,
         require_bluetooth_enabled,
         require_runtime_permissions,
@@ -47,7 +47,7 @@ else:
     jnius.autoclass = mocked_autoclass()
     sys.modules['jnius'] = jnius
 
-    from able.able.dispatcher import (
+    from able.dispatcher import (
         BluetoothDispatcherBase,
         require_bluetooth_enabled,
         require_runtime_permissions,
