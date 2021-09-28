@@ -10,7 +10,7 @@ from time import time
 from ble import BLE
 from kivy.clock import mainthread
 from time import sleep
-__version__ = "1.0"
+__version__ = "1.0.3"
 
 android_device = True
 new_time = 0
