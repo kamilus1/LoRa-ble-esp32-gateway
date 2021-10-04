@@ -8,6 +8,8 @@ extern bool send_updated_timer;
 void NewTimeCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic){
     try{
         timer_end_ts_local = millis() +  strtoul(pCharacteristic->getValue().c_str(), NULL, 0);
+		Serial.print("New timer: ");
+		Serial.println(timer_end_ts_local);
         send_updated_timer = true;
     }catch(const std::exception &e){
         Serial.println(e.what());

@@ -61,9 +61,10 @@ class ConnectWindow(WhiteScreen):
         t = time()
         global connected
         while connected == 2 or connected == 0:
-                self.change_connect_label(f"{self.connecting_label.text}.")
-                i += 1
-                sleep(1.5)
+
+            self.change_connect_label("%s." % self.connecting_label.text)
+            i += 1
+            sleep(1.5)
         if connected == 1:
             self.connected = True
             self.change_connect_label("Connected")

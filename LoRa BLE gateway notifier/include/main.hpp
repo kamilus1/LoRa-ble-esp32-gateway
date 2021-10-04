@@ -22,7 +22,6 @@
 #define RST_LORA 15             // LoRa radio reset
 #define IRQ_LORA 13             // LoRa Hardware interrupt pin
 #define PERIOD_TX_LORA 1000     // Period between Lora Transmissions
-#define LORA_SF 7				// LoRa Spreading factor
 #define LORA_FREQUENCY 915E6    // Frequency used by the LoRa module
 #define TIME_PARAM_INPUT_1 "hours"  // Params used to parse the html form submit
 #define TIME_PARAM_INPUT_2 "min"    // Params used to parse the html form submit

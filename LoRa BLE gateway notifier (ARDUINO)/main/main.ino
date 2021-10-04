@@ -46,7 +46,6 @@ void setup() {
     lora_exist = false;
   }else{
     lora_exist = true;
-	LoRa.setSpreadingFactor(LORA_SF);
     LoRa.onReceive(onReceiveLora);
     LoRa.onTxDone(onTxDoneLoRa);
     // Print LoRa initialization messages

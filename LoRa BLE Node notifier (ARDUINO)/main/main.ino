@@ -74,6 +74,7 @@ void setup() {
     Serial.println("LoRa init failed. Check your connections.");
     while (true);                       // if failed, do nothing
   }
+  Serial.println("LoRA innit succeed");
   LoRa.setSpreadingFactor(LORA_SF);
   LoRa.onReceive(onReceiveLora);    // Config LoRa RX routines
   LoRa.onTxDone(onTxDoneLoRa);      // Config LoRa TX routines
@@ -117,7 +118,8 @@ void loop() {
   timer_json += " \"timer_reached_end\": " + String(int(timer_reached_end)) + "}";
   // Apply delay that ensures that the gps object is being "fed".
   smartDelay(1000);
-
+  Serial.println(timer_json);
+  Serial.println(gps_json);
   if (millis() > 5000 && gps.charsProcessed() < 10){
     //no gps data received
   }
@@ -138,6 +140,7 @@ void loop() {
   }
   if((timer_end_ts_local > 0) && (millis() > timer_end_ts_local)){
     timer_reached_end = true;
+    Serial.println("timer reached end");
     // ------   Activate release mechanism  --------------
     if(pwm_move >= 25){
       pwm_move = PWM_MOVE;
@@ -297,7 +300,7 @@ void onReceiveLora(int packetSize) {
   while (LoRa.available()) {        // Loop while there is data in the RX buffer
     message += (char)LoRa.read();   // Read a new value from the RX buffer
   }
-
+  Serial.println(message);
   // Parse Type of Message
   int init_index = 0;
   int end_index = message.indexOf(':', init_index);

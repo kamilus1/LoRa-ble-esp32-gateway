@@ -1,5 +1,5 @@
 from able import BluetoothDispatcher, GATT_SUCCESS
-from time import time
+from time import time, sleep
 
 
 class BLE(BluetoothDispatcher):
@@ -12,65 +12,66 @@ class BLE(BluetoothDispatcher):
         self.device_name = device_name
         self.curr_uid = "GPS"
         if not characteristics_uuid:
-            self.characteristic_uuid = {"GT": "beb5483e-36e1-4688-b7f5-ea07361b26a8",
-                                        "NODE": "beb5483f-36e1-4688-b7f5-ea07361b26a8",
-                                        "TIME": "beb54840-36e1-4688-b7f5-ea07361b26a8",
-                                        "NEW_TIME": "beb54841-36e1-4688-b7f5-ea07361b26a8",
-                                        "GPS": "beb54842-36e1-4688-b7f5-ea07361b26a8",
-                                        "BATTERY": "beb54843-36e1-4688-b7f5-ea07361b26a8"
+            self.characteristic_uuid = {"GT": "483e",
+                                        "NODE": "483f",
+                                        "TIME": "4840",
+                                        "NEW_TIME": "4841",
+                                        "GPS": "4842",
+                                        "BATTERY": "4843"
                                         }
 
     def get_gateway_data(self):
         rssi = self.get_rssi()
-        if rssi == 0:
-            rssi = "Not received"
         connected = "False"
         if self.is_connected():
             connected = "True"
         gt_ts = "No data"
         if self.get_characteristic("GT"):
-            pass
+            i = 0
+            value = None
+            while i < 10:
+                value = self.get_characteristic_value()
+                if value:
+                    break
+                i += 1
+                sleep(1)
+            if value:
+                gt_ts = value
         return {"name": self.device_name, "rssi": rssi, "connected": connected, "gateway timer": gt_ts}
 
     def get_node_data(self):
         node_data = {"gps": "No data", "battery": "No data", "node timer": "No data"}
         if self.get_characteristic("GPS"):
             i = 0
-            t = 0
             value = None
             while i < 10:
-                if time() - t > 1:
                     value = self.get_characteristic_value()
                     if value:
                         break
                     i += 1
-                    t = time()
+                    sleep(1)
             if value:
                 node_data["gps"] = value
         if self.get_characteristic("BATTERY"):
             i = 0
-            t = 0
             value = None
             while i < 10:
-                if time() - t > 1:
                     value = self.get_characteristic_value()
                     if value:
                         break
                     i += 1
-                    t = time()
+                    sleep(1)
             if value:
                 node_data["battery"] = value
         if self.get_characteristic("NODE"):
             i = 0
-            t = 0
             value = None
             while i < 10:
-                if time() - t > 1:
                     value = self.get_characteristic_value()
                     if value:
                         break
                     i += 1
-                    t = time()
+                    sleep(1)
             if value:
                 node_data["node timer"] = value
         return node_data
@@ -117,20 +118,18 @@ class BLE(BluetoothDispatcher):
         t = 0
         i = 0
         while not self.device and i < 10:
-            if time() - t > 5:
-                t = time()
                 self.stop_scan()
                 self.start_scan()
                 i += 1
+                sleep(3)
         if not self.device:
             return False
         i = 0
         t = 0
         while not self.characteristic and i < 10:
-            if time() - t > 3:
-                t = time()
                 i += 1
                 self.discover_services()
+                sleep(3)
         if self.characteristic:
             return True
         else:
@@ -161,10 +160,9 @@ class BLE(BluetoothDispatcher):
             return False
         i = 0
         while not self.characteristic and i < 10:
-            if time() - t > 3:
-                t = time()
                 i += 1
                 self.discover_services()
+                sleep(3)
 
         if self.characteristic:
             s = str(value)
