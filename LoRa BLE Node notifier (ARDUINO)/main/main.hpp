@@ -2,6 +2,8 @@
 #include <SPI.h>
 #include <LoRa.h>
 
+
+#define SYNC_WORD             0xF3
 #define LED1 5                // ESP32 GPIO connected to LED1
 #define LED2 0                // ESP32 GPIO connected to LED2
 #define LED_LORA_RX LED1      // Led that notifies LoRa RX
@@ -19,7 +21,7 @@
 #define PERIOD_TX_LORA 1000   // Period between Lora Transmissions
 #define PERIOD_ERASE_BUFF 10000 // Period between the erase of terminal msgs
 #define PERIOD_TX_LORA 1000   // Period between Lora Transmissions
-#define LORA_FREQUENCY 915E6  // Frequency used by the LoRa module
+#define LORA_FREQUENCY 866E6  // Frequency used by the LoRa module
 #define GPS_BAUD  9600        // GPS baud rate
 #define GPS_RX    16
 #define GPS_TX    17

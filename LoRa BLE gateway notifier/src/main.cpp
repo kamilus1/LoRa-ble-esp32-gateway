@@ -41,10 +41,12 @@ void setup() {
   // Initialize serial communication (used for debugging)
   Serial.begin(115200);
   LoRa.setPins(CS_LORA, RST_LORA, IRQ_LORA);
-  if(!LoRa.begin(LORA_FREQUENCY)){
-    Serial.println("LoRa init failed. Check your connections.");
-    lora_exist = false;
-  }else{
+  lora_exist = false;
+  Serial.println("initing LoRa");
+  while(!LoRa.begin(LORA_FREQUENCY)){
+    Serial.print(".");
+    delay(500);
+  }
     lora_exist = true;
     LoRa.onReceive(onReceiveLora);
     LoRa.onTxDone(onTxDoneLoRa);
@@ -56,7 +58,6 @@ void setup() {
     Serial.println("Tx: invertIQ enable");
     Serial.println("Rx: invertIQ disable");
     Serial.println();
-  }
   //initialize BLE
   BLEDevice::init(DEVICE_NAME);
   BLEServer *pServer = BLEDevice::createServer();

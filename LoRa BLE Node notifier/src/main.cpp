@@ -68,11 +68,11 @@ void setup() {
   // Setup LoRa module
   LoRa.setPins(CS_LORA, RST_LORA, IRQ_LORA);
  
-
+  Serial.println("initing LoRa");
   // Initialize the LoRa module
-  if (!LoRa.begin(LORA_FREQUENCY)) {
-    Serial.println("LoRa init failed. Check your connections.");
-    while (true);                       // if failed, do nothing
+  while (!LoRa.begin(LORA_FREQUENCY)) {
+    Serial.println(".");
+    delay(500);                   // if failed, do nothing
   }
   Serial.println("LoRA innit succeed");
   LoRa.setSpreadingFactor(LORA_SF);
